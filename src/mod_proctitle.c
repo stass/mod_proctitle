@@ -83,7 +83,7 @@ proctitle_translate(request_rec *r) {
 	
 	setproctitle("%s%s", name, r->uri);
 
-	return OK;
+	return DECLINED;
 }
 
 /*
@@ -92,9 +92,14 @@ proctitle_translate(request_rec *r) {
 
 static void
 register_hooks(apr_pool_t *p __unused) {
-	ap_hook_translate_name(proctitle_translate, NULL, NULL, \
-		APR_HOOK_LAST);
+	ap_hook_fixups(proctitle_translate, NULL, NULL, \
+		APR_HOOK_MIDDLE);
 }
+
+static const command_rec proctitle_commands[] =
+{
+	{NULL, {NULL}, NULL, 0, 0, NULL},
+};
 
 module AP_MODULE_DECLARE_DATA proctitle_module = {
 	STANDARD20_MODULE_STUFF,
@@ -102,6 +107,6 @@ module AP_MODULE_DECLARE_DATA proctitle_module = {
 	NULL,			/* dir merger --- default is to override */
 	NULL,			/* server config */
 	NULL,			/* merge server configs */
-	NULL,			/* command apr_table_t */
+	proctitle_commands,	/* command apr_table_t */
 	register_hooks,		/* register hooks */
 };
