@@ -26,7 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $MBSDlabs$
+ * $MBSDlabs: mod_proctitle/src/mod_proctitle.c,v 1.2 2007/04/12 17:38:29 stas Exp $
  *
  * $HTSID$
  */
@@ -43,16 +43,11 @@
 #include <apr.h>
 #include <apr_strings.h>
 #include <apr_hooks.h>
-#include <apr_lib.h>
-#define APR_WANT_STRFUNC
-#include <apr_want.h>
 
 #include <httpd.h>
 #include <http_config.h>
 #include <http_core.h>
 #include <http_request.h>
-#include <http_log.h>
-#include <unixd.h>
 
 #undef PACKAGE_BUGREPORT /* damn apache */
 #undef PACKAGE_NAME
@@ -70,34 +65,45 @@ static void register_hooks		__P((apr_pool_t *p));
 /* Forward */
 module AP_MODULE_DECLARE_DATA proctitle_module;
 
+unsigned int enabled;	/* enable/disable */
+
 /*
- * Extract required fields from the request and perform translations needed
+ * Set process titles according to urls they're processing
  */
 static int
-proctitle_translate(request_rec *r) {
+proctitle_fixup(request_rec *r) {
 	const char *name;
 
 	name = ap_get_server_name(r);
-	if (name == NULL || r->uri == NULL)
-		return DECLINED;
-	
-	setproctitle("%s%s", name, r->uri);
+	if (name != NULL && r->uri != NULL)
+		setproctitle("-%s::%s", name, r->uri);
 
-	return DECLINED;
+	return OK;
 }
 
 /*
  ********************* Standard module stuff ************************
  */
 
+static const char *
+proctitle_flag(cmd_parms *cmd __unused, void *mconfig __unused, int flag)
+{
+
+	enabled = flag;
+
+	return NULL;
+}
+
 static void
 register_hooks(apr_pool_t *p __unused) {
-	ap_hook_fixups(proctitle_translate, NULL, NULL, \
+	ap_hook_fixups(proctitle_fixup, NULL, NULL, \
 		APR_HOOK_MIDDLE);
 }
 
 static const command_rec proctitle_commands[] =
 {
+	AP_INIT_FLAG("ProctitleEnable", proctitle_flag, NULL, RSRC_CONF, \
+	    "Enable/disable setting process titles (on by default)"),
 	{NULL, {NULL}, NULL, 0, 0, NULL},
 };
 
