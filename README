@@ -1,0 +1,6 @@
+This module will set process titles of httpd processes to request names they're
+currently processing, so they will be visible in top and ps. Useful for site
+debugging purposes.
+
+The following configuration options are available:
+ProctitileEnable - On/Off	/* Enable/disable module */
