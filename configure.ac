@@ -40,14 +40,14 @@ if test "${APXS}" == "no"; then
 	AC_MSG_ERROR([Cannot find apxs, check your path.])
 fi
 
-AC_PATH_PROG(APR_CONFIG, apr-1-config, no)
+AC_PATH_PROGS(APR_CONFIG, [apr-config apr-1-config apr-2-config], no)
 if test "${APR_CONFIG}" == "no"; then
-	AC_MSG_ERROR([Cannot find apr-1-config, check your path.])
+	AC_MSG_ERROR([Cannot find apr-config, check your path.])
 fi
 
-AC_PATH_PROG(APU_CONFIG, apu-1-config, no)
+AC_PATH_PROGS(APU_CONFIG, [apu-config apu-1-config apu-2-config], no)
 if test "${APU_CONFIG}" == "no"; then
-	AC_MSG_ERROR([Cannot find apu-1-config, check your path.])
+	AC_MSG_ERROR([Cannot find apu-config, check your path.])
 fi
 
 APACHE_INCLUDEDIR=`${APXS} -q INCLUDEDIR`
