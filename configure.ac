@@ -15,7 +15,7 @@ dnl automake
 dnl AMU_PACKAGE_NAME($PACKAGE_NAME)
 dnl AMU_PACKAGE_VERSION($PACKAGE_VERSION)
 dnl AMU_PACKAGE_BUGREPORT($PACKAGE_BUGREPORT)
-AM_INIT_AUTOMAKE([mod_proctitle], [0.2])
+AM_INIT_AUTOMAKE([mod_proctitle], [0.4])
 
 dnl ------------------ Check for programs --------------------------------
 AC_PROG_CC
@@ -36,17 +36,17 @@ AM_MAINTAINER_MODE
 
 dnl ------------------- Check for programs --------------------------
 AC_PATH_PROG(APXS, apxs, no)
-if test "${APXS}" == "no"; then
+if test x"${APXS}" = x"no"; then
 	AC_MSG_ERROR([Cannot find apxs, check your path.])
 fi
 
 AC_PATH_PROGS(APR_CONFIG, [apr-config apr-1-config apr-2-config], no)
-if test "${APR_CONFIG}" == "no"; then
+if test x"${APR_CONFIG}" = x"no"; then
 	AC_MSG_ERROR([Cannot find apr-config, check your path.])
 fi
 
 AC_PATH_PROGS(APU_CONFIG, [apu-config apu-1-config apu-2-config], no)
-if test "${APU_CONFIG}" == "no"; then
+if test x"${APU_CONFIG}" = x"no"; then
 	AC_MSG_ERROR([Cannot find apu-config, check your path.])
 fi
 
