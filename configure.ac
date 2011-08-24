@@ -5,7 +5,7 @@ dnl ------------------- Initialization -----------------------------------
 dnl autoconf
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (c) 2007 Stanislav Sedov <stas@FreeBSD.org>])
-AC_INIT([mod_proctitle], [0.2], [stas@FreeBSD.org])
+AC_INIT([mod_proctitle], [0.3], [stas@FreeBSD.org])
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_HEADER([config.h])
 
