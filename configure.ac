@@ -5,7 +5,7 @@ dnl ------------------- Initialization -----------------------------------
 dnl autoconf
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (c) 2007-2011 Stanislav Sedov <stas@FreeBSD.org>])
-AC_INIT([mod_proctitle], [0.4], [stas@FreeBSD.org])
+AC_INIT([mod_proctitle], [0.4.1], [stas@FreeBSD.org])
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_HEADER([config.h])
 
@@ -15,7 +15,7 @@ dnl automake
 dnl AMU_PACKAGE_NAME($PACKAGE_NAME)
 dnl AMU_PACKAGE_VERSION($PACKAGE_VERSION)
 dnl AMU_PACKAGE_BUGREPORT($PACKAGE_BUGREPORT)
-AM_INIT_AUTOMAKE([mod_proctitle], [0.4])
+AM_INIT_AUTOMAKE([mod_proctitle], [0.4.1])
 
 dnl ------------------ Check for programs --------------------------------
 AC_PROG_CC
