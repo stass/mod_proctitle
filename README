@@ -3,4 +3,6 @@ currently processing, so they will be visible in top and ps. Useful for site
 debugging purposes.
 
 The following configuration options are available:
-ProctitileEnable - On/Off	/* Enable/disable module */
+ProctitileEnable - On/Off (Enable/disable module)
+ProctitleUriSep - the separator string used to separate URI from state
+                  ("::" by default)

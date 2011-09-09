@@ -1,4 +1,5 @@
 /*-
+ * Copyright (c) 2011 Stanislav Sedov <stas@FreeBSD.org>
  * Copyright (c) 2007 Hosting Telesystems, JSC
  * All rights reserved.
  *
@@ -26,9 +27,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $MBSDlabs: mod_proctitle/src/mod_proctitle.c,v 1.2 2007/04/12 17:38:29 stas Exp $
- *
- * $HTSID$
  */
 
 #include <stdlib.h>
@@ -66,6 +64,7 @@ static void register_hooks		__P((apr_pool_t *p));
 module AP_MODULE_DECLARE_DATA proctitle_module;
 
 unsigned int enabled;	/* enable/disable */
+static char *urisep;
 
 /*
  * Set process titles according to urls they're processing
@@ -76,7 +75,18 @@ proctitle_fixup(request_rec *r) {
 
 	name = ap_get_server_name(r);
 	if (name != NULL && r->uri != NULL)
-		setproctitle("-%s::%s", name, r->uri);
+		setproctitle("-[busy] %s%s%s", name, urisep, r->uri);
+
+	return OK;
+}
+
+static int
+proctitle_log(request_rec *r) {
+	const char *name;
+
+	name = ap_get_server_name(r);
+	if (name != NULL && r->uri != NULL)
+		setproctitle("-[idle] %s%s%s", name, urisep, r->uri);
 
 	return OK;
 }
@@ -94,16 +104,38 @@ proctitle_flag(cmd_parms *cmd __unused, void *mconfig __unused, int flag)
 	return NULL;
 }
 
+static const char *
+proctitle_str(cmd_parms *cmd, void *mconfig __unused, const char *arg)
+{
+	if (arg == NULL || cmd == NULL)
+		return NULL;
+
+	urisep = apr_pstrdup(cmd->pool, arg);
+}
+
+static void *
+cfg_init(apr_pool_t *p, server_rec *s __unused)
+{
+	enabled = 1;
+	urisep = apr_pstrdup(p, "::");
+
+	return NULL;
+}
+
 static void
 register_hooks(apr_pool_t *p __unused) {
+
 	ap_hook_fixups(proctitle_fixup, NULL, NULL, \
 		APR_HOOK_MIDDLE);
+	ap_hook_log_transaction(proctitle_log,NULL,NULL,APR_HOOK_LAST);
 }
 
 static const command_rec proctitle_commands[] =
 {
 	AP_INIT_FLAG("ProctitleEnable", proctitle_flag, NULL, RSRC_CONF, \
 	    "Enable/disable setting process titles (on by default)"),
+	AP_INIT_TAKE1("ProctitleUriSep", proctitle_str, NULL, RSRC_CONF, \
+	    "Set URI separator ('::' by default)"),
 	{NULL, {NULL}, NULL, 0, 0, NULL},
 };
 
@@ -111,7 +143,7 @@ module AP_MODULE_DECLARE_DATA proctitle_module = {
 	STANDARD20_MODULE_STUFF,
 	NULL,			/* dir config creater */
 	NULL,			/* dir merger --- default is to override */
-	NULL,			/* server config */
+	cfg_init,			/* server config */
 	NULL,			/* merge server configs */
 	proctitle_commands,	/* command apr_table_t */
 	register_hooks,		/* register hooks */
